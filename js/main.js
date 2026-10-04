@@ -10,8 +10,18 @@
   var TZ = 'Australia/Sydney';
   var OPEN_MIN = 8 * 60 + 30, CLOSE_MIN = 17 * 60 + 30; // Mon–Fri
 
+  /* ---------- Language (EN / FA) ---------- */
+  var I18N = window.MM_I18N || null;
+  var LANG = 'en';
+  function t(k, vars) {
+    var s = (I18N && I18N.dyn[LANG] && I18N.dyn[LANG][k]) || (I18N && I18N.dyn.en[k]) || k;
+    if (vars) Object.keys(vars).forEach(function (v) { s = s.replace('{' + v + '}', vars[v]); });
+    return s;
+  }
+  function faDigits(s) { return LANG === 'fa' ? String(s).replace(/\d/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'[d]; }) : String(s); }
+
   /* ---------- Split headings into words ---------- */
-  $$('[data-split]').forEach(function (el) {
+  function splitEl(el) {
     var i = 0;
     (function walk(node) {
       Array.prototype.slice.call(node.childNodes).forEach(function (ch) {
@@ -30,7 +40,8 @@
       });
     })(el);
     el.classList.add('split');
-  });
+  }
+  $$('[data-split]').forEach(function (el) { el._src = el.innerHTML; splitEl(el); });
 
   /* ---------- Reveal on scroll ---------- */
   var revealEls = $$('[data-reveal], [data-split], #steps, .reviews-cta');
@@ -90,7 +101,7 @@
   function setMenu(open) {
     document.body.classList.toggle('menu-open', open);
     burger.setAttribute('aria-expanded', open);
-    burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    burger.setAttribute('aria-label', open ? t('closeMenu') : t('openMenu'));
     menu.setAttribute('aria-hidden', !open);
     if (open) header.classList.remove('hide');
   }
@@ -106,24 +117,26 @@
       return { day: days[o.weekday], min: parseInt(o.hour, 10) % 24 * 60 + parseInt(o.minute, 10) };
     } catch (e) { var d = new Date(); return { day: d.getDay(), min: d.getHours() * 60 + d.getMinutes() }; }
   }
-  function fmt(min) { var h = Math.floor(min / 60), m = min % 60; return (h % 12 || 12) + (m ? ':' + (m < 10 ? '0' : '') + m : '') + (h < 12 ? 'am' : 'pm'); }
+  function fmt(min) { var h = Math.floor(min / 60), m = min % 60; return faDigits((h % 12 || 12) + (m ? ':' + (m < 10 ? '0' : '') + m : '')) + (h < 12 ? t('am') : t('pm')); }
   function updateStatus() {
     var n = sydneyNow(), weekday = n.day >= 1 && n.day <= 5;
     var open = weekday && n.min >= OPEN_MIN && n.min < CLOSE_MIN;
-    var text, sub;
+    var text, sub, short;
     if (open) {
       var left = CLOSE_MIN - n.min;
-      text = 'Open now'; sub = left <= 60 ? 'Closing soon — until ' + fmt(CLOSE_MIN) : 'Until ' + fmt(CLOSE_MIN) + ' today';
+      text = t('open'); sub = left <= 60 ? t('closingSoon', { t: fmt(CLOSE_MIN) }) : t('until', { t: fmt(CLOSE_MIN) });
+      short = sub;
     } else {
-      text = 'Closed now';
-      if (weekday && n.min < OPEN_MIN) sub = 'Opens today at ' + fmt(OPEN_MIN);
-      else if (n.day >= 1 && n.day <= 4) sub = 'Opens tomorrow at ' + fmt(OPEN_MIN);
-      else sub = 'Opens Monday at ' + fmt(OPEN_MIN);
+      text = t('closed');
+      if (weekday && n.min < OPEN_MIN) sub = t('opensToday', { t: fmt(OPEN_MIN) });
+      else if (n.day >= 1 && n.day <= 4) sub = t('opensTomorrow', { t: fmt(OPEN_MIN) });
+      else sub = t('opensMonday', { t: fmt(OPEN_MIN) });
+      short = sub;
     }
     $$('[data-status]').forEach(function (el) {
       el.classList.toggle('is-open', open); el.classList.toggle('is-closed', !open);
-      var t = $('[data-status-text]', el); if (t) t.textContent = el.classList.contains('status-pill') ? text + ' · ' + sub.replace(' today', '') : text;
-      var s = $('[data-status-sub]', el); if (s) s.textContent = sub + ' (Sydney time)';
+      var tx = $('[data-status-text]', el); if (tx) tx.textContent = el.classList.contains('status-pill') ? text + ' · ' + short : text;
+      var s = $('[data-status-sub]', el); if (s) s.textContent = sub + t('sydney');
     });
     $$('#hours li').forEach(function (li) { li.classList.toggle('today', +li.getAttribute('data-day') === n.day); });
   }
@@ -225,13 +238,14 @@
   function esc(s) { return s.replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function openDrawer(key) {
     var s = SERVICES[key]; if (!s) return;
+    if (LANG === 'fa' && I18N && I18N.servFa[key]) s = Object.assign({}, s, I18N.servFa[key]);
     lastFocus = document.activeElement;
     dImg.src = s.img; dImg.alt = '';
     currentBook = s.book;
     dBody.innerHTML = '<h3 class="h-md" id="drawerTitle">' + esc(s.title) + '</h3>' +
       '<p>' + esc(s.text) + '</p>' +
-      '<div><h4>What\'s included</h4><ul class="check">' + s.inc.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ul></div>' +
-      '<div><h4>Signs you need it</h4><ul class="check check--warn">' + s.signs.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ul></div>';
+      '<div><h4>' + esc(t('included')) + '</h4><ul class="check">' + s.inc.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ul></div>' +
+      '<div><h4>' + esc(t('signs')) + '</h4><ul class="check check--warn">' + s.signs.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ul></div>';
     dBody.scrollTop = 0;
     drawer.classList.remove('open'); void drawer.offsetWidth;
     drawer.classList.add('open'); drawer.setAttribute('aria-hidden', 'false');
@@ -253,7 +267,7 @@
   function presetService(name) {
     if (!name) return;
     for (var i = 0; i < svcSelect.options.length; i++) {
-      if (svcSelect.options[i].text === name) { svcSelect.selectedIndex = i; svcSelect.closest('.field').classList.remove('err'); break; }
+      if (svcSelect.options[i].value === name) { svcSelect.selectedIndex = i; svcSelect.closest('.field').classList.remove('err'); break; }
     }
   }
   $$('[data-preset]').forEach(function (a) { a.addEventListener('click', function () { presetService(a.getAttribute('data-preset')); }); });
@@ -264,13 +278,13 @@
   yr.max = thisYear;
   function check() {
     var y = +yr.value, age = thisYear - y;
-    yrOut.textContent = y;
+    yrOut.textContent = faDigits(y);
     var cls, title, sub;
-    if (age > 5) { cls = ''; title = 'Yes — you\'ll most likely need a pink slip'; sub = 'Your car is around ' + age + ' years old. Most light vehicles over 5 years old need a safety inspection report before rego renewal. Book in and we\'ll take care of it.'; }
-    else if (age >= 4) { cls = 'maybe'; title = 'Possibly — you\'re close to the 5-year mark'; sub = 'It depends on when your car was manufactured or first registered. Check your rego renewal notice — it will say if an inspection is needed.'; }
-    else { cls = 'no'; title = 'Probably not yet'; sub = 'Light vehicles under 5 years old generally don\'t need a pink slip for rego renewal. A regular logbook service still keeps it in top shape.'; }
+    if (age > 5) { cls = ''; title = t('vYes'); sub = t('vYesSub', { n: faDigits(age) }); }
+    else if (age >= 4) { cls = 'maybe'; title = t('vMaybe'); sub = t('vMaybeSub'); }
+    else { cls = 'no'; title = t('vNo'); sub = t('vNoSub'); }
     verdict.className = 'verdict ' + cls;
-    verdict.innerHTML = '<b>' + title + '</b><span>' + sub + '</span>';
+    verdict.innerHTML = '<b>' + esc(title) + '</b><span>' + esc(sub) + '</span>';
     void verdict.offsetWidth; verdict.classList.add('anim');
   }
   yr.addEventListener('input', check); check();
@@ -286,15 +300,17 @@
     tyre: { c: 'amber', t: 'Tyre pressure (TPMS)', m: 'One or more tyres is below the recommended pressure, or the tyre pressure monitoring system has a fault.', d: 'Check and inflate the tyres to the pressure on the driver\'s door placard. If a tyre keeps going down, have it checked for a puncture.', svc: 'Suspension, steering & other' },
     glow: { c: 'amber', t: 'Diesel glow plugs', m: 'On a diesel, this light comes on briefly while the glow plugs pre-heat. If it flashes or stays on while driving, the engine management has found a fault.', d: 'Wait for it to go out before starting a cold diesel. If it flashes or stays on, book a diagnostic scan.', svc: 'Diagnostics / warning light' }
   };
-  var info = $('#lightInfo'), wls = $$('.wl');
-  function showLight(key, focus) {
+  var info = $('#lightInfo'), wls = $$('.wl'), currentLight = 'engine';
+  function showLight(key) {
+    currentLight = key;
     var L = LIGHTS[key];
+    if (LANG === 'fa' && I18N && I18N.lightsFa[key]) L = Object.assign({}, L, I18N.lightsFa[key]);
     wls.forEach(function (w) { var on = w.getAttribute('data-light') === key; w.classList.toggle('on', on); w.setAttribute('aria-selected', on); });
     info.innerHTML = '<div class="swap" style="display:flex;flex-direction:column;height:100%">' +
-      '<span class="urg ' + L.c + '">' + (L.c === 'red' ? '● Stop safely' : '● Get it checked soon') + '</span>' +
-      '<h3 class="h-md">' + L.t + '</h3><p>' + L.m + '</p>' +
-      '<div class="todo"><b>What to do</b>' + L.d + '</div>' +
-      '<a class="btn btn--primary btn--sm" href="#book" data-light-book style="margin-top:22px">Book a check</a></div>';
+      '<span class="urg ' + L.c + '">' + esc(L.c === 'red' ? t('urgRed') : t('urgAmber')) + '</span>' +
+      '<h3 class="h-md">' + esc(L.t) + '</h3><p>' + esc(L.m) + '</p>' +
+      '<div class="todo"><b>' + esc(t('todo')) + '</b>' + esc(L.d) + '</div>' +
+      '<a class="btn btn--primary btn--sm" href="#book" data-light-book style="margin-top:22px">' + esc(t('bookCheck')) + '</a></div>';
     $('[data-light-book]', info).addEventListener('click', function () { presetService(L.svc); });
   }
   wls.forEach(function (w) { w.addEventListener('click', function () { showLight(w.getAttribute('data-light')); }); });
@@ -368,17 +384,18 @@
       'Preferred: ' + (dateTxt || 'Any day') + ', ' + f.get('time')
     ];
     if (f.get('message').trim()) lines.push('Details: ' + f.get('message').trim());
+    if (LANG === 'fa') lines.push('Language: Farsi (sent from the Farsi version of the website)');
     var msg = lines.join('\n');
     var sep = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent) ? '&' : '?';
     var smsHref = 'sms:' + PHONE_SMS + sep + 'body=' + encodeURIComponent(msg);
     mMsg.textContent = msg; mSms.href = smsHref;
-    mText.textContent = isMobile ? 'Tap "Open SMS" to send it to the workshop — or copy it and call us.' : 'Copy the text below and send it to 0469 431 798, or simply call the workshop.';
+    mText.textContent = isMobile ? t('modalMobile') : t('modalDesk');
     openModal();
     if (isMobile) setTimeout(function () { window.location.href = smsHref; }, 700);
   });
   mCopy.addEventListener('click', function () {
     var t = mMsg.textContent, label = $('span', mCopy);
-    function done() { label.textContent = 'Copied!'; setTimeout(function () { label.textContent = 'Copy text'; }, 2000); }
+    function done() { label.textContent = t('copied'); setTimeout(function () { label.textContent = t('copy'); }, 2000); }
     if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).then(done, fallback); else fallback();
     function fallback() { var ta = document.createElement('textarea'); ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = 0; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); done(); } catch (err) {} document.body.removeChild(ta); }
   });
@@ -387,6 +404,76 @@
   function closeModal() { modal.classList.remove('open'); document.body.style.overflow = ''; if (mLast) mLast.focus(); }
   $('[data-modal-close]', modal).addEventListener('click', closeModal);
   modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+
+  /* ---------- Language switch ---------- */
+  var origText = new WeakMap();
+  var ATTRS = ['placeholder', 'aria-label', 'alt', 'title'];
+  function norm(s) { return s.replace(/\s+/g, ' ').trim(); }
+  function translateTree(root, skipSplit) {
+    var dict = I18N ? I18N.fa : {};
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode: function (n) {
+        var p = n.parentElement;
+        if (!p || p.closest('script,style,svg,#drawerBody,#lightInfo,#verdict,[data-status],#modalMsg,.marquee')) return NodeFilter.FILTER_REJECT;
+        if (skipSplit && p.closest('[data-split]')) return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    var n, list = [];
+    while ((n = walker.nextNode())) list.push(n);
+    list.forEach(function (node) {
+      if (!origText.has(node)) origText.set(node, node.nodeValue);
+      var orig = origText.get(node), key = norm(orig);
+      if (!key) return;
+      if (LANG === 'fa' && Object.prototype.hasOwnProperty.call(dict, key)) {
+        node.nodeValue = (/^\s/.test(orig) ? ' ' : '') + dict[key] + (/\s$/.test(orig) ? ' ' : '');
+      } else node.nodeValue = orig;
+    });
+    $$('[' + ATTRS.join('],[') + ']', root).forEach(function (el) {
+      if (el.closest('svg')) return;
+      ATTRS.forEach(function (a) {
+        if (!el.hasAttribute(a)) return;
+        var store = 'data-en-' + a;
+        if (!el.hasAttribute(store)) el.setAttribute(store, el.getAttribute(a));
+        var orig = el.getAttribute(store), key = norm(orig);
+        el.setAttribute(a, LANG === 'fa' && Object.prototype.hasOwnProperty.call(dict, key) ? dict[key] : orig);
+      });
+    });
+  }
+  function setLang(lang, save) {
+    if (!I18N) lang = 'en';
+    LANG = lang;
+    var html = document.documentElement;
+    html.lang = lang === 'fa' ? 'fa' : 'en-AU';
+    html.dir = lang === 'fa' ? 'rtl' : 'ltr';
+    document.title = t('title');
+    translateTree(document.body, true);
+    $$('[data-split]').forEach(function (el) {
+      var wasIn = el.classList.contains('in');
+      el.innerHTML = el._src;
+      if (lang === 'fa') translateTree(el, false);
+      splitEl(el);
+      if (wasIn) el.classList.add('in');
+    });
+    var ring = $('#ringText'); if (ring) ring.textContent = lang === 'fa' ? 'متخصص خودروهای اروپایی ✦ همهٔ برندها ✦ پینک‌اسلیپ ✦ ' : 'Euro specialists ✦ All makes ✦ Pink slips ✦';
+    $$('[data-lang-toggle]').forEach(function (b) { b.textContent = t('toggle'); b.setAttribute('aria-label', t('toggleLabel')); b.setAttribute('lang', lang === 'fa' ? 'en' : 'fa'); });
+    burger.setAttribute('aria-label', document.body.classList.contains('menu-open') ? t('closeMenu') : t('openMenu'));
+    updateStatus(); check(); showLight(currentLight);
+    $('span', mCopy).textContent = t('copy');
+    if (drawer.classList.contains('open')) closeDrawer();
+    if (save) {
+      try { localStorage.setItem('mm-lang', lang); } catch (e) {}
+      try { var u = new URL(location.href); if (lang === 'fa') u.searchParams.set('lang', 'fa'); else u.searchParams.delete('lang'); history.replaceState(null, '', u.toString()); } catch (e) {}
+    }
+  }
+  $$('[data-lang-toggle]').forEach(function (b) {
+    b.addEventListener('click', function () { setLang(LANG === 'fa' ? 'en' : 'fa', true); setMenu(false); });
+  });
+  (function initLang() {
+    var want = 'en';
+    try { var q = new URLSearchParams(location.search).get('lang'); if (q === 'fa' || q === 'en') want = q; else { var st = localStorage.getItem('mm-lang'); if (st) want = st; } } catch (e) {}
+    if (want === 'fa') setLang('fa', false);
+  })();
 
   /* ---------- Global keys ---------- */
   document.addEventListener('keydown', function (e) {

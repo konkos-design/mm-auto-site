@@ -16,7 +16,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23ffd21f'/%3E%3Ctext x='32' y='42' font-family='Arial Black,Arial' font-weight='900' font-size='24' text-anchor='middle' fill='%23111'%3EM%26M%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Vazirmatn:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Vazirmatn:wght@400..900&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="img/storefront.webp">
 <link rel="stylesheet" href="css/style.css">
 <script>document.documentElement.classList.add('js')</script>
@@ -104,6 +104,7 @@
       <a href="#contact">Contact</a>
     </nav>
     <div class="header__cta">
+      <button class="lang-btn" type="button" data-lang-toggle lang="fa" aria-label="نمایش سایت به فارسی">فارسی</button>
       <span class="status-pill" data-status><span class="dot"></span><span data-status-text>Checking hours…</span></span>
       <a class="btn btn--primary btn--sm" href="#book" data-magnetic>Book a service</a>
       <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu"><span></span><span></span><span></span></button>
@@ -140,7 +141,7 @@
       <p class="lead fade-in" style="animation-delay:.55s">Logbook servicing, engine repairs, air-con, brakes, diagnostics and authorised pink slips — from a Corolla oil change to pulling the engine out of a Mercedes. Independent workshop at 2B Bourke Street.</p>
       <div class="hero__actions fade-in" style="animation-delay:.7s">
         <a class="btn btn--primary" href="tel:+61288100060" data-magnetic><svg><use href="#i-phone"/></svg>Call (02) 8810 0060</a>
-        <a class="btn btn--ghost" href="#book" data-magnetic>Book online<svg><use href="#i-arrow"/></svg></a>
+        <a class="btn btn--ghost" href="#book" data-magnetic>Book online<svg class="arr"><use href="#i-arrow"/></svg></a>
       </div>
       <div class="hero__chips fade-in" style="animation-delay:.85s">
         <span class="chip"><svg><use href="#s-shield"/></svg>Authorised Safety Check</span>
@@ -149,7 +150,7 @@
       </div>
     </div>
     <div class="badge-ring fade-in" style="animation-delay:1s" aria-hidden="true">
-      <svg class="ring" viewBox="0 0 200 200"><defs><path id="circ" d="M100,100 m-80,0 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0"/></defs><text><textPath href="#circ">Euro specialists ✦ All makes ✦ Pink slips ✦</textPath></text></svg>
+      <svg class="ring" viewBox="0 0 200 200"><defs><path id="circ" d="M100,100 m-80,0 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0"/></defs><text><textPath href="#circ" id="ringText">Euro specialists ✦ All makes ✦ Pink slips ✦</textPath></text></svg>
       <div class="core"><div><b>AIS</b>Pink slips</div></div>
     </div>
   </div>
@@ -209,7 +210,7 @@
           <span class="svc__icon"><svg><use href="#s-car"/></svg></span>
           <h3>European car specialists</h3>
           <p>Mercedes-Benz, BMW, Audi, Volkswagen, Porsche, Land Rover. Servicing with the right oil specs, proper diagnostics and repairs from minor to major.</p>
-          <span class="svc__more">Details <svg><use href="#i-arrow"/></svg></span>
+          <span class="svc__more">Details <svg class="arr"><use href="#i-arrow"/></svg></span>
         </div>
       </button>
       <button class="svc" data-svc="servicing" data-reveal="up" style="--d:1" data-tilt>
@@ -217,70 +218,70 @@
         <span class="svc__icon"><svg><use href="#s-oil"/></svg></span>
         <h3>Logbook &amp; general servicing</h3>
         <p>Manufacturer-schedule services that keep your new-car warranty intact, plus general services for older cars.</p>
-        <span class="svc__more">Details <svg><use href="#i-arrow"/></svg></span>
+        <span class="svc__more">Details <svg class="arr"><use href="#i-arrow"/></svg></span>
       </button>
       <button class="svc" data-svc="pinkslip" data-reveal="up" data-tilt>
         <span class="svc__num">03</span>
         <span class="svc__icon"><svg><use href="#s-shield"/></svg></span>
         <h3>Pink slips &amp; safety checks</h3>
         <p>Authorised safety inspections for rego, defect notice clearance, cars, light vehicles and motorcycles.</p>
-        <span class="svc__more">Details <svg><use href="#i-arrow"/></svg></span>
+        <span class="svc__more">Details <svg class="arr"><use href="#i-arrow"/></svg></span>
       </button>
       <button class="svc" data-svc="engine" data-reveal="up" style="--d:1" data-tilt>
         <span class="svc__num">04</span>
         <span class="svc__icon"><svg><use href="#s-engine"/></svg></span>
         <h3>Engine repairs &amp; rebuilds</h3>
         <p>Head gaskets, cylinder head work, oil leaks, misfires and full engine removal.</p>
-        <span class="svc__more">Details <svg><use href="#i-arrow"/></svg></span>
+        <span class="svc__more">Details <svg class="arr"><use href="#i-arrow"/></svg></span>
       </button>
       <button class="svc" data-svc="aircon" data-reveal="up" style="--d:2" data-tilt>
         <span class="svc__num">05</span>
         <span class="svc__icon"><svg><use href="#s-snow"/></svg></span>
         <h3>Air-conditioning</h3>
         <p>Not blowing cold? Leak checks, re-gas and repairs to compressors, condensers and fans.</p>
-        <span class="svc__more">Details <svg><use href="#i-arrow"/></svg></span>
+        <span class="svc__more">Details <svg class="arr"><use href="#i-arrow"/></svg></span>
       </button>
       <button class="svc" data-svc="brakes" data-reveal="up" data-tilt>
         <span class="svc__num">06</span>
         <span class="svc__icon"><svg><use href="#s-brake"/></svg></span>
         <h3>Brakes</h3>
         <p>Pads, rotors, fluid, calipers and ABS faults — so your car stops the way it should.</p>
-        <span class="svc__more">Details <svg><use href="#i-arrow"/></svg></span>
+        <span class="svc__more">Details <svg class="arr"><use href="#i-arrow"/></svg></span>
       </button>
       <button class="svc" data-svc="diag" data-reveal="up" style="--d:1" data-tilt>
         <span class="svc__num">07</span>
         <span class="svc__icon"><svg><use href="#s-scan"/></svg></span>
         <h3>Diagnostics</h3>
         <p>Check-engine light, limp mode or a fault you can't pin down — we scan, test and find the cause.</p>
-        <span class="svc__more">Details <svg><use href="#i-arrow"/></svg></span>
+        <span class="svc__more">Details <svg class="arr"><use href="#i-arrow"/></svg></span>
       </button>
       <button class="svc" data-svc="electrical" data-reveal="up" style="--d:2" data-tilt>
         <span class="svc__num">08</span>
         <span class="svc__icon"><svg><use href="#s-battery"/></svg></span>
         <h3>Battery &amp; electrical</h3>
         <p>Batteries, alternators, starter motors, lights and wiring faults.</p>
-        <span class="svc__more">Details <svg><use href="#i-arrow"/></svg></span>
+        <span class="svc__more">Details <svg class="arr"><use href="#i-arrow"/></svg></span>
       </button>
       <button class="svc" data-svc="cooling" data-reveal="up" data-tilt>
         <span class="svc__num">09</span>
         <span class="svc__icon"><svg><use href="#s-temp"/></svg></span>
         <h3>Cooling &amp; radiators</h3>
         <p>Radiators, hoses, water pumps, thermostats and coolant flushes — before overheating does damage.</p>
-        <span class="svc__more">Details <svg><use href="#i-arrow"/></svg></span>
+        <span class="svc__more">Details <svg class="arr"><use href="#i-arrow"/></svg></span>
       </button>
       <button class="svc" data-svc="timing" data-reveal="up" style="--d:1" data-tilt>
         <span class="svc__num">10</span>
         <span class="svc__icon"><svg><use href="#s-belt"/></svg></span>
         <h3>Timing belts &amp; chains</h3>
         <p>Replaced on schedule — one of the cheapest ways to avoid a very expensive engine failure.</p>
-        <span class="svc__more">Details <svg><use href="#i-arrow"/></svg></span>
+        <span class="svc__more">Details <svg class="arr"><use href="#i-arrow"/></svg></span>
       </button>
       <button class="svc" data-svc="general" data-reveal="up" style="--d:2" data-tilt>
         <span class="svc__num">11</span>
         <span class="svc__icon"><svg><use href="#s-spring"/></svg></span>
         <h3>Suspension, steering &amp; more</h3>
         <p>Shocks, bushes, steering, exhaust, clutch and transmission servicing — general mechanical repairs.</p>
-        <span class="svc__more">Details <svg><use href="#i-arrow"/></svg></span>
+        <span class="svc__more">Details <svg class="arr"><use href="#i-arrow"/></svg></span>
       </button>
     </div>
   </div>
@@ -433,7 +434,7 @@
         <p class="lead" style="margin-top:12px">Read what customers say about M&amp;M on Google — or leave a quick review of your own. It helps us and it helps your neighbours find a mechanic they can trust.</p>
       </div>
       <div class="actions">
-        <a class="btn btn--primary" href="https://maps.app.goo.gl/hQxLwWJKTHDHzKLV6" target="_blank" rel="noopener">Read Google reviews<svg><use href="#i-arrow"/></svg></a>
+        <a class="btn btn--primary" href="https://maps.app.goo.gl/hQxLwWJKTHDHzKLV6" target="_blank" rel="noopener">Read Google reviews<svg class="arr"><use href="#i-arrow"/></svg></a>
         <a class="btn btn--ghost" href="https://search.google.com/local/writereview?placeid=ChIJbXnEpaqjEmsRWNvqXkezyJg" target="_blank" rel="noopener">Leave a review</a>
       </div>
     </div>
@@ -456,24 +457,24 @@
     <form class="form" id="bookForm" novalidate data-reveal="up" style="--d:2">
       <div class="fgrid">
         <div class="field"><label for="f-name">Your name <i>*</i></label><input id="f-name" name="name" autocomplete="name" placeholder="e.g. Sam Taylor" required><span class="msg">Please enter your name</span></div>
-        <div class="field"><label for="f-phone">Mobile <i>*</i></label><input id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="04xx xxx xxx" required><span class="msg">Please enter a valid phone number</span></div>
+        <div class="field"><label for="f-phone">Mobile <i>*</i></label><input id="f-phone" dir="ltr" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="04xx xxx xxx" required><span class="msg">Please enter a valid phone number</span></div>
         <div class="field"><label for="f-car">Make &amp; model <i>*</i></label><input id="f-car" name="car" placeholder="e.g. Mercedes-Benz C200, 2014" required><span class="msg">Which car is it?</span></div>
-        <div class="field"><label for="f-rego">Rego (optional)</label><input id="f-rego" name="rego" placeholder="e.g. ABC12D" autocapitalize="characters"></div>
+        <div class="field"><label for="f-rego">Rego (optional)</label><input id="f-rego" dir="ltr" name="rego" placeholder="e.g. ABC12D" autocapitalize="characters"></div>
         <div class="field full"><label for="f-svc">Service needed <i>*</i></label>
           <select id="f-svc" name="service" required>
             <option value="">Choose a service…</option>
-            <option>Logbook / general service</option>
-            <option>European car service or repair</option>
-            <option>Pink slip (safety check)</option>
-            <option>Engine repair</option>
-            <option>Air-conditioning</option>
-            <option>Brakes</option>
-            <option>Diagnostics / warning light</option>
-            <option>Battery &amp; electrical</option>
-            <option>Cooling / radiator</option>
-            <option>Timing belt or chain</option>
-            <option>Suspension, steering &amp; other</option>
-            <option>Not sure — need advice</option>
+            <option value="Logbook / general service">Logbook / general service</option>
+            <option value="European car service or repair">European car service or repair</option>
+            <option value="Pink slip (safety check)">Pink slip (safety check)</option>
+            <option value="Engine repair">Engine repair</option>
+            <option value="Air-conditioning">Air-conditioning</option>
+            <option value="Brakes">Brakes</option>
+            <option value="Diagnostics / warning light">Diagnostics / warning light</option>
+            <option value="Battery &amp; electrical">Battery &amp; electrical</option>
+            <option value="Cooling / radiator">Cooling / radiator</option>
+            <option value="Timing belt or chain">Timing belt or chain</option>
+            <option value="Suspension, steering &amp; other">Suspension, steering &amp; other</option>
+            <option value="Not sure — need advice">Not sure — need advice</option>
           </select><span class="msg">Please choose a service</span></div>
         <div class="field"><label for="f-date">Preferred day</label><input id="f-date" name="date" type="date"></div>
         <div class="field"><label>Best time</label>
@@ -494,7 +495,7 @@
     <div class="modal__ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg></div>
     <h3 class="h-md" id="modalTitle">Your job card is ready</h3>
     <p style="color:var(--muted);margin:10px 0 0" id="modalText">Send it to the workshop by text message, or copy it and call us.</p>
-    <pre id="modalMsg"></pre>
+    <pre id="modalMsg" dir="ltr"></pre>
     <div class="row">
       <a class="btn btn--primary" id="modalSms" href="#"><svg><use href="#i-sms"/></svg>Open SMS</a>
       <button class="btn btn--ghost" id="modalCopy" type="button"><svg><use href="#i-copy"/></svg><span>Copy text</span></button>
@@ -554,7 +555,7 @@
         </div>
       </div>
       <div class="map" data-reveal="right" style="--d:2">
-        <iframe title="Map showing M&amp;M Auto Repair Centre, 2B Bourke St, North Parramatta" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q=M%26M%20Auto%20Mechanic%2C%202B%20Bourke%20St%2C%20North%20Parramatta%20NSW%202151&amp;z=16&amp;output=embed"></iframe>
+        <iframe title="Map showing M&amp;M Auto Repair Centre, 2B Bourke St, North Parramatta" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://maps.google.com/maps?q=M%26M%20Auto%20Mechanic%2C%202B%20Bourke%20St%2C%20North%20Parramatta%20NSW%202151&amp;z=16&amp;hl=en&amp;output=embed"></iframe>
       </div>
     </div>
   </div>
@@ -568,7 +569,7 @@
     <p class="lead" data-reveal="up" style="--d:2">Call the workshop or send a job card — we'll get you booked in.</p>
     <div class="hero__actions" data-reveal="up" style="--d:3">
       <a class="btn btn--primary" href="tel:+61288100060" data-magnetic><svg><use href="#i-phone"/></svg>(02) 8810 0060</a>
-      <a class="btn btn--ghost" href="#book" data-magnetic>Book online<svg><use href="#i-arrow"/></svg></a>
+      <a class="btn btn--ghost" href="#book" data-magnetic>Book online<svg class="arr"><use href="#i-arrow"/></svg></a>
     </div>
   </div>
 </section>
@@ -629,6 +630,7 @@
 </div>
 <button class="totop" id="totop" aria-label="Back to top"><svg><use href="#i-up"/></svg></button>
 
+<script src="js/i18n.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>
