@@ -260,17 +260,6 @@
   $$('[data-svc]').forEach(function (b) { b.addEventListener('click', function () { openDrawer(b.getAttribute('data-svc')); }); });
   $$('[data-open]').forEach(function (a) { a.addEventListener('click', function () { var k = a.getAttribute('data-open'); setTimeout(function () { openDrawer(k); }, 600); }); });
   $$('[data-close]', drawer).forEach(function (b) { b.addEventListener('click', closeDrawer); });
-  dBook.addEventListener('click', function () { closeDrawer(); presetService(currentBook); });
-
-  /* ---------- Preset booking service ---------- */
-  var svcSelect = $('#f-svc');
-  function presetService(name) {
-    if (!name) return;
-    for (var i = 0; i < svcSelect.options.length; i++) {
-      if (svcSelect.options[i].value === name) { svcSelect.selectedIndex = i; svcSelect.closest('.field').classList.remove('err'); break; }
-    }
-  }
-  $$('[data-preset]').forEach(function (a) { a.addEventListener('click', function () { presetService(a.getAttribute('data-preset')); }); });
 
   /* ---------- Pink slip checker ---------- */
   var yr = $('#year'), yrOut = $('#yearOut'), verdict = $('#verdict');
@@ -310,8 +299,7 @@
       '<span class="urg ' + L.c + '">' + esc(L.c === 'red' ? t('urgRed') : t('urgAmber')) + '</span>' +
       '<h3 class="h-md">' + esc(L.t) + '</h3><p>' + esc(L.m) + '</p>' +
       '<div class="todo"><b>' + esc(t('todo')) + '</b>' + esc(L.d) + '</div>' +
-      '<a class="btn btn--primary btn--sm" href="#book" data-light-book style="margin-top:22px">' + esc(t('bookCheck')) + '</a></div>';
-    $('[data-light-book]', info).addEventListener('click', function () { presetService(L.svc); });
+      '<a class="btn btn--primary btn--sm" href="tel:+61288100060" style="margin-top:22px">' + esc(t('bookCheck')) + '</a></div>';
   }
   wls.forEach(function (w) { w.addEventListener('click', function () { showLight(w.getAttribute('data-light')); }); });
   showLight('engine');
@@ -351,60 +339,6 @@
     });
   });
 
-  /* ---------- Booking form ---------- */
-  var form = $('#bookForm'), modal = $('#modal'), mMsg = $('#modalMsg'), mSms = $('#modalSms'), mCopy = $('#modalCopy'), mText = $('#modalText');
-  var dateIn = $('#f-date');
-  (function () { var d = new Date(), m = d.getMonth() + 1, day = d.getDate(); dateIn.min = d.getFullYear() + '-' + (m < 10 ? '0' : '') + m + '-' + (day < 10 ? '0' : '') + day; })();
-  function validField(el) {
-    var ok = el.value.trim().length > 0;
-    if (ok && el.type === 'tel') ok = el.value.replace(/[^\d]/g, '').length >= 8;
-    el.closest('.field').classList.toggle('err', !ok);
-    return ok;
-  }
-  $$('[required]', form).forEach(function (el) {
-    el.addEventListener('blur', function () { if (el.value) validField(el); });
-    el.addEventListener('input', function () { if (el.closest('.field').classList.contains('err')) validField(el); });
-    el.addEventListener('change', function () { validField(el); });
-  });
-  var isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    var req = $$('[required]', form), firstBad = null;
-    req.forEach(function (el) { if (!validField(el) && !firstBad) firstBad = el; });
-    if (firstBad) { firstBad.focus(); firstBad.closest('.field').animate && firstBad.closest('.field').animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-8px)' }, { transform: 'translateX(8px)' }, { transform: 'translateX(0)' }], { duration: 300 }); return; }
-    var f = new FormData(form);
-    var dateTxt = '';
-    if (f.get('date')) { var p = f.get('date').split('-'); dateTxt = new Date(+p[0], +p[1] - 1, +p[2]).toLocaleDateString('en-AU', { weekday: 'short', day: 'numeric', month: 'short' }); }
-    var lines = [
-      'JOB CARD — M&M Auto',
-      'Name: ' + f.get('name').trim(),
-      'Phone: ' + f.get('phone').trim(),
-      'Car: ' + f.get('car').trim() + (f.get('rego') ? ' (rego ' + f.get('rego').trim().toUpperCase() + ')' : ''),
-      'Service: ' + f.get('service'),
-      'Preferred: ' + (dateTxt || 'Any day') + ', ' + f.get('time')
-    ];
-    if (f.get('message').trim()) lines.push('Details: ' + f.get('message').trim());
-    if (LANG === 'fa') lines.push('Language: Farsi (sent from the Farsi version of the website)');
-    var msg = lines.join('\n');
-    var sep = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent) ? '&' : '?';
-    var smsHref = 'sms:' + PHONE_SMS + sep + 'body=' + encodeURIComponent(msg);
-    mMsg.textContent = msg; mSms.href = smsHref;
-    mText.textContent = isMobile ? t('modalMobile') : t('modalDesk');
-    openModal();
-    if (isMobile) setTimeout(function () { window.location.href = smsHref; }, 700);
-  });
-  mCopy.addEventListener('click', function () {
-    var t = mMsg.textContent, label = $('span', mCopy);
-    function done() { label.textContent = t('copied'); setTimeout(function () { label.textContent = t('copy'); }, 2000); }
-    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).then(done, fallback); else fallback();
-    function fallback() { var ta = document.createElement('textarea'); ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = 0; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); done(); } catch (err) {} document.body.removeChild(ta); }
-  });
-  var mLast = null;
-  function openModal() { mLast = document.activeElement; modal.classList.add('open'); document.body.style.overflow = 'hidden'; setTimeout(function () { mSms.focus(); }, 60); }
-  function closeModal() { modal.classList.remove('open'); document.body.style.overflow = ''; if (mLast) mLast.focus(); }
-  $('[data-modal-close]', modal).addEventListener('click', closeModal);
-  modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
-
   /* ---------- Language switch ---------- */
   var origText = new WeakMap();
   var ATTRS = ['placeholder', 'aria-label', 'alt', 'title'];
@@ -414,7 +348,7 @@
     var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
       acceptNode: function (n) {
         var p = n.parentElement;
-        if (!p || p.closest('script,style,svg,#drawerBody,#lightInfo,#verdict,[data-status],#modalMsg,.marquee')) return NodeFilter.FILTER_REJECT;
+        if (!p || p.closest('script,style,svg,#drawerBody,#lightInfo,#verdict,[data-status],.marquee')) return NodeFilter.FILTER_REJECT;
         if (skipSplit && p.closest('[data-split]')) return NodeFilter.FILTER_REJECT;
         return NodeFilter.FILTER_ACCEPT;
       }
@@ -459,7 +393,6 @@
     $$('[data-lang-toggle]').forEach(function (b) { b.textContent = t('toggle'); b.setAttribute('aria-label', t('toggleLabel')); b.setAttribute('lang', lang === 'fa' ? 'en' : 'fa'); });
     burger.setAttribute('aria-label', document.body.classList.contains('menu-open') ? t('closeMenu') : t('openMenu'));
     updateStatus(); check(); showLight(currentLight);
-    $('span', mCopy).textContent = t('copy');
     if (drawer.classList.contains('open')) closeDrawer();
     if (save) {
       try { localStorage.setItem('mm-lang', lang); } catch (e) {}
@@ -479,7 +412,6 @@
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
       if (lb.classList.contains('open')) lbClose();
-      else if (modal.classList.contains('open')) closeModal();
       else if (drawer.classList.contains('open')) closeDrawer();
       else if (document.body.classList.contains('menu-open')) setMenu(false);
     }

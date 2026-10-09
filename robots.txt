@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://konkos-design.github.io/mm-auto-site/sitemap.xml
