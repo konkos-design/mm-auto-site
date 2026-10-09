@@ -61,6 +61,8 @@
   var parallax = $$('[data-parallax]');
   var lastY = window.scrollY, ticking = false;
   function onScroll() {
+    // Fixed-body menu locking must not reset the header, progress or parallax.
+    if (document.body.classList.contains('menu-open')) { ticking = false; return; }
     var y = window.scrollY, h = document.documentElement.scrollHeight - innerHeight;
     progress.style.transform = 'scaleX(' + (h > 0 ? y / h : 0) + ')';
     header.classList.toggle('scrolled', y > 30);
@@ -97,14 +99,32 @@
   }
 
   /* ---------- Mobile menu ---------- */
-  var burger = $('#burger'), menu = $('#mobileMenu');
+  var burger = $('#burger'), menu = $('#mobileMenu'), menuScrollY = 0;
+  menu.inert = true;
   function setMenu(open) {
+    if (open === document.body.classList.contains('menu-open')) return;
+    if (open) {
+      menuScrollY = window.scrollY;
+      document.body.style.setProperty('--menu-scroll-top', -menuScrollY + 'px');
+      header.classList.remove('hide');
+    }
+    document.documentElement.classList.toggle('menu-open', open);
     document.body.classList.toggle('menu-open', open);
     burger.setAttribute('aria-expanded', open);
     burger.setAttribute('aria-label', open ? t('closeMenu') : t('openMenu'));
     menu.setAttribute('aria-hidden', !open);
-    if (open) header.classList.remove('hide');
+    menu.inert = !open;
+    if (!open) {
+      document.body.style.removeProperty('--menu-scroll-top');
+      // Restore immediately; smooth restoration exposes moving sections behind the overlay.
+      window.scrollTo({ top: menuScrollY, behavior: 'instant' });
+      lastY = menuScrollY;
+      onScroll();
+    }
   }
+  window.addEventListener('resize', function () {
+    if (innerWidth > 1180) setMenu(false);
+  });
   burger.addEventListener('click', function () { setMenu(!document.body.classList.contains('menu-open')); });
   $$('a', menu).forEach(function (a) { a.addEventListener('click', function () { setMenu(false); }); });
 
